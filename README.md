@@ -1,3 +1,5 @@
+![Downplaygram_logo](DOWNPLAYGRAM.png)
+
 # Downplaygram
 
 > **The zero-telemetry, client-side Instagram media extractor and stealth story viewer built for Chromium Manifest V3.**
