@@ -1,0 +1,40 @@
+# Build outputs
+.output/
+.wxt/
+
+# TypeScript
+*.tsbuildinfo
+dist­ts
+
+# Dependencies
+node_modules/
+
+# Environment variables
+.env*
+local.env*
+
+# IDE specific
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Extension specific
+public/manifest.json
+
+# Chrome Extension temp files
+*.ctx
+*.pfx
+
+# Binaries
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Testing artifacts
+coverage/
+*.spec.ts.metadata.json
