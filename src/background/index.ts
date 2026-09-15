@@ -104,6 +104,61 @@ export default defineBackground(() => {
             break;
           }
 
+          case 'DOWNLOAD_BATCH': {
+            const items = message.items || [];
+            for (const item of items) {
+              if (item?.url && item?.filename) {
+                await chrome.downloads.download({
+                  url: item.url,
+                  filename: item.filename,
+                  conflictAction: 'uniquify',
+                  saveAs: false,
+                });
+                await new Promise((r) => setTimeout(r, 250));
+              }
+            }
+            sendResponse({ success: true, count: items.length });
+            break;
+          }
+
+          case 'FETCH_HIGHLIGHT_MEDIA': {
+            const { highlightId } = message;
+            if (!highlightId) {
+              sendResponse({ success: false, error: 'Missing highlightId' });
+              return;
+            }
+
+            const formattedReelId = String(highlightId).startsWith('highlight:')
+              ? String(highlightId)
+              : `highlight:${highlightId}`;
+
+            const apiUrl = `https://www.instagram.com/api/v1/feed/reels_media/?reel_ids=${encodeURIComponent(formattedReelId)}`;
+
+            try {
+              const res = await fetch(apiUrl, {
+                method: 'GET',
+                headers: {
+                  'X-IG-App-ID': '936619743392459',
+                  'X-Requested-With': 'XMLHttpRequest',
+                  'X-ASBD-ID': '129477',
+                  Accept: '*/*',
+                },
+                credentials: 'include',
+              });
+
+              if (!res.ok) {
+                throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+              }
+
+              const data = await res.json();
+              sendResponse({ success: true, data });
+            } catch (err: any) {
+              console.error('[Downplaygram] Error in FETCH_HIGHLIGHT_MEDIA:', err);
+              sendResponse({ success: false, error: err?.message || 'Failed to fetch highlight media' });
+            }
+            break;
+          }
+
           case 'RELOAD_TAB': {
             if (sender.tab?.id) {
               await chrome.tabs.reload(sender.tab.id);

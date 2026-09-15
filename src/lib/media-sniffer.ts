@@ -655,24 +655,57 @@ export async function getAllHighlightMedia(
   }
 
   // 2. Fetch On-Demand dari Server Instagram dengan prefix highlight:
-  const csrf = getCsrfToken();
-  const headers: Record<string, string> = {
-    'X-IG-App-ID': IG_APP_ID,
-    'X-ASBD-ID': '129477',
-    'X-Requested-With': 'XMLHttpRequest',
-    'Accept': 'application/json',
-  };
-  if (csrf) headers['X-CSRFToken'] = csrf;
+  let json: any = null;
+
+  // 2a. Delegasikan ke Background Service Worker untuk bypass CORS & CSP
+  if (typeof chrome !== 'undefined' && chrome.runtime?.sendMessage) {
+    try {
+      const bgRes = await new Promise<any>((resolve) => {
+        chrome.runtime.sendMessage(
+          { action: 'FETCH_HIGHLIGHT_MEDIA', highlightId },
+          (response) => {
+            if (chrome.runtime.lastError) {
+              resolve(null);
+            } else {
+              resolve(response);
+            }
+          }
+        );
+      });
+      if (bgRes?.success && bgRes.data) {
+        json = bgRes.data;
+      }
+    } catch {
+      // Fallback ke direct fetch
+    }
+  }
+
+  // 2b. Fallback direct fetch jika background relay tidak tersedia (misal di test env)
+  if (!json) {
+    const csrf = getCsrfToken();
+    const headers: Record<string, string> = {
+      'X-IG-App-ID': IG_APP_ID,
+      'X-ASBD-ID': '129477',
+      'X-Requested-With': 'XMLHttpRequest',
+      'Accept': 'application/json',
+    };
+    if (csrf) headers['X-CSRFToken'] = csrf;
+
+    try {
+      const res = await fetch(
+        `https://www.instagram.com/api/v1/feed/reels_media/?reel_ids=highlight%3A${encodeURIComponent(highlightId)}`,
+        { method: 'GET', headers, credentials: 'include' }
+      );
+
+      if (!res.ok) return [];
+      json = await res.json();
+    } catch (err) {
+      console.error('[Downplaygram] Error fetching highlight media:', err);
+      return [];
+    }
+  }
 
   try {
-    const res = await fetch(
-      `https://www.instagram.com/api/v1/feed/reels_media/?reel_ids=highlight%3A${encodeURIComponent(highlightId)}`,
-      { method: 'GET', headers, credentials: 'include' }
-    );
-
-    if (!res.ok) return [];
-
-    const json = await res.json();
     const reelKey = `highlight:${highlightId}`;
 
     // PENTING: Gunakan FALLBACK (||), JANGAN PERNAH concat properti ini

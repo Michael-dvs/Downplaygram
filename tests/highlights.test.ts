@@ -5,7 +5,8 @@ import {
 } from '../src/lib/media-sniffer';
 import { storyMediaCache } from '../src/lib/media-cache';
 import * as runtime from '../src/lib/runtime';
-import { handleBatchDownload, handleDownloadCurrentStory } from '../src/content/injectors/stories';
+import { handleBatchDownload, handleDownloadCurrentStory, handleDownloadAllHighlight } from '../src/content/injectors/stories';
+import { extractHighlightIdFromUrl, fetchHighlightItems } from '../src/content/api/instagram';
 import * as sniffer from '../src/lib/media-sniffer';
 
 describe('highlights support', () => {
@@ -383,6 +384,117 @@ describe('highlights support', () => {
 
       const items = await getAllHighlightMedia('hl_7_slides', 'athlete');
       expect(items.length).toBe(7);
+    });
+  });
+
+  describe('instagram content API & background relay', () => {
+    it('extractHighlightIdFromUrl correctly extracts highlight id from URL pathname', () => {
+      vi.stubGlobal('window', {
+        location: { pathname: '/stories/highlights/180234567890/' },
+      });
+      expect(extractHighlightIdFromUrl()).toBe('180234567890');
+
+      vi.stubGlobal('window', {
+        location: { pathname: '/stories/highlights/highlight_abc123/' },
+      });
+      expect(extractHighlightIdFromUrl()).toBe('highlight_abc123');
+
+      vi.stubGlobal('window', {
+        location: { pathname: '/stories/username/123456789/' },
+      });
+      expect(extractHighlightIdFromUrl()).toBeNull();
+    });
+
+    it('fetchHighlightItems delegates to chrome.runtime.sendMessage with FETCH_HIGHLIGHT_MEDIA', async () => {
+      const mockSendMessage = vi.fn().mockImplementation((msg, cb) => {
+        expect(msg.action).toBe('FETCH_HIGHLIGHT_MEDIA');
+        expect(msg.highlightId).toBe('180234567890');
+        cb({
+          success: true,
+          data: {
+            reels: {
+              'highlight:180234567890': {
+                id: 'highlight:180234567890',
+                items: [
+                  { pk: 'vid_1', video_versions: [{ url: 'https://cdn.ig/vid1.mp4' }] },
+                  { pk: 'img_2', image_versions2: { candidates: [{ url: 'https://cdn.ig/img2.jpg' }] } },
+                ],
+              },
+            },
+          },
+        });
+      });
+
+      vi.stubGlobal('chrome', {
+        runtime: {
+          sendMessage: mockSendMessage,
+        },
+      });
+
+      const items = await fetchHighlightItems('180234567890');
+      expect(mockSendMessage).toHaveBeenCalledTimes(1);
+      expect(items.length).toBe(2);
+      expect(items[0].pk).toBe('vid_1');
+      expect(items[1].pk).toBe('img_2');
+    });
+
+    it('handleDownloadAllHighlight extracts best quality media and dispatches DOWNLOAD_BATCH to background', async () => {
+      const mockSendMessage = vi.fn().mockImplementation((msg, cb) => {
+        if (msg.action === 'FETCH_HIGHLIGHT_MEDIA') {
+          cb({
+            success: true,
+            data: {
+              reels_media: [
+                {
+                  id: 'highlight:180234567890',
+                  items: [
+                    {
+                      pk: 'item_1',
+                      user: { username: 'traveler' },
+                      video_versions: [
+                        { url: 'https://cdn.ig/dashinit.mp4', width: 720, height: 1280 },
+                        { url: 'https://cdn.ig/highres.mp4', width: 1080, height: 1920 },
+                      ],
+                    },
+                    {
+                      pk: 'item_2',
+                      user: { username: 'traveler' },
+                      image_versions2: {
+                        candidates: [{ url: 'https://cdn.ig/photo.jpg' }],
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          });
+        }
+      });
+
+      vi.stubGlobal('chrome', {
+        runtime: {
+          sendMessage: mockSendMessage,
+        },
+      });
+
+      await handleDownloadAllHighlight('180234567890');
+
+      // Verify DOWNLOAD_BATCH message was sent
+      expect(mockSendMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'DOWNLOAD_BATCH',
+          items: [
+            {
+              url: 'https://cdn.ig/highres.mp4',
+              filename: 'Downplaygram/traveler/Highlights/180234567890_1_item_1.mp4',
+            },
+            {
+              url: 'https://cdn.ig/photo.jpg',
+              filename: 'Downplaygram/traveler/Highlights/180234567890_2_item_2.jpg',
+            },
+          ],
+        })
+      );
     });
   });
 });

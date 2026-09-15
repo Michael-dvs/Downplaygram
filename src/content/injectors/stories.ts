@@ -13,6 +13,7 @@ import {
 } from '../../lib/media-sniffer';
 import { isExtensionContextValid, safeSendMessage } from '../../lib/runtime';
 import { iconSpinner, iconSuccess, iconError, iconDownload } from '../../ui/icons';
+import { fetchHighlightItems, extractHighlightIdFromUrl } from '../api/instagram';
 
 const STORY_CONTAINER_ID = 'downplaygram-story-container';
 const STORY_BOTTOM_BTN_ID = 'downplaygram-story-bottom-btn';
@@ -146,6 +147,12 @@ export function injectStoryButton(): void {
 
     // 1. Ekstrak konteks (apakah highlight atau story biasa, beserta username/reelId)
     const context = getStoryOrHighlightContext();
+    if (context.isHighlight && !context.highlightId) {
+      const extractedHlId = extractHighlightIdFromUrl();
+      if (extractedHlId) {
+        context.highlightId = extractedHlId;
+      }
+    }
 
     // 2. Dapatkan seluruh media items untuk konteks ini
     let items: any[] = [];
@@ -203,6 +210,61 @@ function getOptionStyle(): string {
 }
 
 /**
+ * Eksekusi Unduh Semua Media di dalam Sorotan (Highlight) via Background Service Worker
+ */
+export async function handleDownloadAllHighlight(highlightId: string): Promise<void> {
+  try {
+    const items = await fetchHighlightItems(highlightId);
+    if (!items || items.length === 0) {
+      alert('Tidak ada media yang ditemukan dalam highlight ini.');
+      return;
+    }
+
+    // Ekstraksi URL media dengan resolusi tertinggi (video / image)
+    const mediaUrls: { url: string; filename: string }[] = [];
+
+    items.forEach((item: any, index: number) => {
+      const isVideo = Boolean(item.video_versions && item.video_versions.length > 0);
+      let directUrl = '';
+
+      if (isVideo && item.video_versions?.length) {
+        const validVids = item.video_versions.filter(
+          (v: any) => v?.url && !v.url.includes('dashinit') && !v.url.includes('_audio_dashinit')
+        );
+        validVids.sort((a: any, b: any) => ((b.width || 0) * (b.height || 0)) - ((a.width || 0) * (a.height || 0)));
+        directUrl = validVids[0]?.url || item.video_versions[0]?.url || '';
+      } else if (item.image_versions2?.candidates?.length) {
+        directUrl = item.image_versions2.candidates[0].url;
+      }
+
+      if (!directUrl) return;
+
+      const ext = isVideo ? 'mp4' : 'jpg';
+      const username = item.user?.username || 'instagram_user';
+      const filename = `Downplaygram/${username}/Highlights/${highlightId}_${index + 1}_${item.pk}.${ext}`;
+
+      mediaUrls.push({ url: directUrl, filename });
+    });
+
+    if (mediaUrls.length === 0) {
+      alert('Tidak ada media yang dapat diunduh.');
+      return;
+    }
+
+    // Kirim batch download ke background
+    if (typeof chrome !== 'undefined' && chrome.runtime?.sendMessage) {
+      chrome.runtime.sendMessage({
+        action: 'DOWNLOAD_BATCH',
+        items: mediaUrls,
+      });
+    }
+  } catch (error: any) {
+    console.error('[Downplaygram] Error fetching highlight media:', error);
+    alert(`Gagal mengunduh sorotan: ${error.message}`);
+  }
+}
+
+/**
  * Render Opsi Menu Pop-Up (Mendukung Story & Highlight)
  */
 function renderHighlightOrStoryPopup(
@@ -250,6 +312,13 @@ function renderHighlightOrStoryPopup(
   btnAll.onclick = async (e) => {
     e.stopPropagation();
     onClose();
+    if (context.isHighlight) {
+      const hlId = context.highlightId || extractHighlightIdFromUrl();
+      if (hlId) {
+        await handleDownloadAllHighlight(hlId);
+        return;
+      }
+    }
     await handleBatchDownload(btn, context.username, items, folder);
   };
 
