@@ -95,8 +95,11 @@ flowchart TD
     Sanitizer --> Background
     LightboxModal --> Background
     Background --> ChromeDL[chrome.downloads API Pipeline]
+```
 
-🎨 Interactive Micro-Interactions System
+---
+
+## 🎨 Interactive Micro-Interactions System
 
 The micro-interaction design system is implemented entirely in `src/ui/icons.ts`. All SVG icons use stroke-based rendering with `currentColor` for automatic dark mode support. Three CSS keyframe animations are defined:
 
@@ -204,10 +207,12 @@ downplaygram/
 ├── tests/                   # Vitest unit & integration tests
 │   ├── anonymous-service.test.ts
 │   ├── feed-injector.test.ts
+│   ├── highlights.test.ts
 │   ├── icons.test.ts
 │   ├── media-sniffer.test.ts
 │   ├── reels-injector.test.ts
 │   ├── sanitizer.test.ts
+│   ├── story-tray.test.ts
 │   └── video-synthesizer.test.ts
 │
 ├── public/
