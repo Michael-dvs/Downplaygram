@@ -125,28 +125,53 @@ Every icon function (`iconSpinner()`, `iconSuccess()`, `iconError()`) calls `inj
 
 ---
 
-## 🚀 Getting Started & Local Development
+## 🚀 Installation
+
+### Option 1: Quick Install (Recommended for Everyone)
+
+No Git, Node.js, or compilation required. Run one command in your terminal:
+
+**Windows (PowerShell):**
+```powershell
+irm https://raw.githubusercontent.com/Michael-dvs/Downplaygram/main/scripts/install.ps1 | iex
+```
+
+**macOS & Linux (Terminal):**
+```bash
+curl -fsSL https://raw.githubusercontent.com/Michael-dvs/Downplaygram/main/scripts/install.sh | bash
+```
+
+> **What the script does:** Downloads the latest release build, extracts it to an application directory, opens your browser's extension settings, and displays the folder. Simply toggle **Developer mode** and click **Load unpacked**.
+
+---
+
+### Option 2: Manual Download (Pre-built ZIP)
+
+1. Download `downplaygram-chrome.zip` from the [Latest GitHub Releases](https://github.com/Michael-dvs/Downplaygram/releases).
+2. Extract the archive into a permanent folder on your computer.
+3. Open `chrome://extensions/` in Chrome, Brave, or Edge.
+4. Enable **Developer mode** in the top-right corner.
+5. Click **Load unpacked** and select the extracted folder.
+
+---
+
+### Option 3: Build from Source (Developers)
 
 ```bash
-# Clone the repository
-git clone https://github.com/username/downplaygram.git
-cd downplaygram
+# Clone repository
+git clone https://github.com/Michael-dvs/Downplaygram.git
+cd Downplaygram
 
-# Install dependencies
+# Install dependencies & test
 npm install
-
-# Run Vitest test suite
 npm test
 
-# Typecheck & Build extension for Chrome
+# Build extension
 npm run compile
 npm run build
-
-# Loading Extension into Chrome:
-# 1. Open chrome://extensions/ in a Chromium-based browser
-# 2. Enable "Developer mode" (toggle top-right)
-# 3. Click "Load unpacked" and select the .output/chrome-mv3 directory
 ```
+
+Load the unpacked extension from `.output/chrome-mv3` via `chrome://extensions/`.
 
 ---
 
@@ -156,6 +181,9 @@ npm run build
 downplaygram/
 ├── .wxt/                    # WXT internal configuration
 ├── .output/                 # Built output (chrome-mv3, firefox, edge)
+├── scripts/                 # Automated one-click installers
+│   ├── install.ps1          # Windows PowerShell installer
+│   └── install.sh           # macOS & Linux bash installer
 ├── CHROMEWEBSTORE.md        # Chrome Web Store submission guide
 ├── LICENSE                  # MIT license file
 ├── packages/                # (if any monorepo packages)
