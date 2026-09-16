@@ -13,6 +13,7 @@ import {
 } from '../../lib/media-sniffer';
 import { isExtensionContextValid, safeSendMessage } from '../../lib/runtime';
 import { iconSpinner, iconSuccess, iconError, iconDownload } from '../../ui/icons';
+import { SYSTEM_FONT_FAMILY, injectGlobalThemeStyles } from '../../ui/theme';
 import { fetchHighlightItems, extractHighlightIdFromUrl } from '../api/instagram';
 
 const STORY_CONTAINER_ID = 'downplaygram-story-container';
@@ -24,6 +25,8 @@ export function injectStoryButton(): void {
     document.getElementById(STORY_BOTTOM_BTN_ID)?.remove();
     return;
   }
+
+  injectGlobalThemeStyles();
 
   // Temukan ikon Love di bar bawah
   const allSvgs = Array.from(document.querySelectorAll<SVGElement>('svg'));
@@ -112,18 +115,19 @@ export function injectStoryButton(): void {
     position: absolute !important;
     bottom: calc(100% + 12px) !important;
     right: 0 !important;
-    background: rgba(22, 22, 22, 0.95) !important;
-    backdrop-filter: blur(12px) !important;
-    -webkit-backdrop-filter: blur(12px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    background: var(--dpg-surface, #1b2633) !important;
+    border: 1px solid var(--dpg-border, rgba(49, 91, 140, 0.3)) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25) !important;
     border-radius: 12px !important;
-    padding: 6px !important;
+    padding: 8px !important;
     display: none;
     flex-direction: column !important;
     gap: 4px !important;
-    min-width: 210px !important;
+    min-width: 220px !important;
     z-index: 100 !important;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6) !important;
+    font-family: ${SYSTEM_FONT_FAMILY} !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
     animation: dpgSlideUp 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
   `;
 
@@ -196,7 +200,8 @@ function getOptionStyle(): string {
     width: 100% !important;
     background: transparent !important;
     border: none !important;
-    color: #ffffff !important;
+    color: var(--dpg-text-primary, #F5EBDD) !important;
+    font-family: ${SYSTEM_FONT_FAMILY} !important;
     padding: 10px 12px !important;
     border-radius: 8px !important;
     cursor: pointer !important;
@@ -284,12 +289,12 @@ function renderHighlightOrStoryPopup(
   btnCurrent.type = 'button';
   btnCurrent.style.cssText = getOptionStyle();
   btnCurrent.innerHTML = `
-    <div style="display: flex; align-items: center; gap: 10px; width: 100%; color: #ffffff;">
-      ${iconDownload(18, '#ffffff')}
+    <div style="display: flex; align-items: center; gap: 10px; width: 100%; color: var(--dpg-text-primary, #F5EBDD); font-family: ${SYSTEM_FONT_FAMILY};">
+      ${iconDownload(18, 'currentColor')}
       <span style="font-size: 13px; font-weight: 500; line-height: 1;">Unduh ${typeLabel} ini</span>
     </div>
   `;
-  btnCurrent.onmouseenter = () => { btnCurrent.style.background = 'rgba(255, 255, 255, 0.1)'; };
+  btnCurrent.onmouseenter = () => { btnCurrent.style.background = 'rgba(49, 91, 140, 0.25)'; };
   btnCurrent.onmouseleave = () => { btnCurrent.style.background = 'transparent'; };
   btnCurrent.onclick = async (e) => {
     e.stopPropagation();
@@ -302,12 +307,12 @@ function renderHighlightOrStoryPopup(
   btnAll.type = 'button';
   btnAll.style.cssText = getOptionStyle();
   btnAll.innerHTML = `
-    <div style="display: flex; align-items: center; gap: 10px; width: 100%; color: #ffffff;">
-      ${iconDownload(18, '#ffffff')}
+    <div style="display: flex; align-items: center; gap: 10px; width: 100%; color: var(--dpg-text-primary, #F5EBDD); font-family: ${SYSTEM_FONT_FAMILY};">
+      ${iconDownload(18, 'currentColor')}
       <span style="font-size: 13px; font-weight: 500; line-height: 1;">Unduh semua (${totalCount} ${typeLabel})</span>
     </div>
   `;
-  btnAll.onmouseenter = () => { btnAll.style.background = 'rgba(255, 255, 255, 0.1)'; };
+  btnAll.onmouseenter = () => { btnAll.style.background = 'rgba(49, 91, 140, 0.25)'; };
   btnAll.onmouseleave = () => { btnAll.style.background = 'transparent'; };
   btnAll.onclick = async (e) => {
     e.stopPropagation();

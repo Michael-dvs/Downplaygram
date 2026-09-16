@@ -16,7 +16,7 @@ const app = document.getElementById('app')!;
 app.innerHTML = `
   <div class="header">
     <div class="brand">
-      ${iconGhost(20, '#a855f7')}
+      ${iconGhost(20, '#315B8C')}
       <span>Downplaygram</span>
     </div>
     <span class="version">v3.0</span>
@@ -25,7 +25,6 @@ app.innerHTML = `
   <div class="card">
     <div class="card-header">
       <span class="card-title">QUICK ANONYMOUS VIEW</span>
-      <span class="ghost-badge">100% Stealth</span>
     </div>
     <p class="card-desc">Lihat &amp; unduh story tanpa terlihat sebagai viewer.</p>
 

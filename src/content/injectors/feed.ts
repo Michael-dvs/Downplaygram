@@ -10,6 +10,7 @@ import {
 } from '../../lib/media-sniffer';
 import { safeSendMessage } from '../../lib/runtime';
 import { iconSpinner, iconSuccess, iconError, iconDownload } from '../../ui/icons';
+import { SYSTEM_FONT_FAMILY, injectGlobalThemeStyles } from '../../ui/theme';
 
 export function injectFeedButtons(): void {
   // Hindari injeksi di halaman stories
@@ -52,44 +53,75 @@ export function injectFeedButtons(): void {
   });
 }
 
+/**
+ * Creates an adaptive feed download button honoring Instagram dark/light modes.
+ */
+export function createFeedDownloadButton(): HTMLButtonElement {
+  injectGlobalThemeStyles();
+
+  const dlBtn = document.createElement('button');
+  dlBtn.type = 'button';
+  dlBtn.setAttribute('aria-label', 'Unduh Media');
+  dlBtn.setAttribute('title', 'Unduh Media (Downplaygram)');
+  dlBtn.title = 'Unduh Media (Downplaygram)';
+
+  // Menggunakan 'color: inherit' dan 'currentColor':
+  // Di Dark Mode IG: Parent color bernilai putih (#fff) -> Ikon otomatis putih.
+  // Di Light Mode IG: Parent color bernilai hitam/abu (#262626) -> Ikon otomatis hitam.
+  dlBtn.style.cssText = `
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+    padding: 8px !important;
+    margin: 0 !important;
+    color: inherit !important;
+    flex-shrink: 0 !important;
+    box-sizing: border-box !important;
+    transition: opacity 0.15s ease, transform 0.1s ease !important;
+    outline: none !important;
+  `;
+  dlBtn.style.color = 'inherit';
+
+  dlBtn.innerHTML = iconDownload(24, 'currentColor');
+
+  dlBtn.onmouseenter = () => { dlBtn.style.opacity = '0.65'; };
+  dlBtn.onmouseleave = () => { dlBtn.style.opacity = '1'; dlBtn.style.transform = 'scale(1)'; };
+  dlBtn.onmousedown = () => { dlBtn.style.transform = 'scale(0.92)'; };
+  dlBtn.onmouseup = () => { dlBtn.style.transform = 'scale(1)'; };
+
+  return dlBtn;
+}
+
 function attachFeedDownloadButton(post: HTMLElement, saveBtnWrapper: HTMLElement): void {
   const container = document.createElement('div');
   container.className = 'downplaygram-feed-container downplaygram-feed-btn downplaygram-btn-container';
   container.style.cssText = `position: relative; display: inline-flex; align-items: center; justify-content: center; margin-right: 12px;`;
 
-  const mainBtn = document.createElement('button');
-  mainBtn.type = 'button';
-  mainBtn.title = 'Unduh Postingan (Downplaygram)';
-  mainBtn.style.cssText = `background: transparent; border: none; cursor: pointer; padding: 0; color: currentColor; display: inline-flex; align-items: center; justify-content: center; line-height: 0; transition: transform 0.15s ease;`;
-  mainBtn.innerHTML = iconDownload(24);
+  const mainBtn = createFeedDownloadButton();
 
   const popupMenu = document.createElement('div');
   popupMenu.className = 'downplaygram-carousel-popup';
   popupMenu.style.cssText = `
-    position: absolute;
-    bottom: calc(100% + 8px);
-    right: 0;
-    background: rgba(22, 22, 22, 0.95);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 10px;
-    padding: 6px;
+    position: absolute !important;
+    bottom: calc(100% + 8px) !important;
+    right: 0 !important;
+    background: var(--dpg-surface, #1b2633) !important;
+    border: 1px solid var(--dpg-border, rgba(49, 91, 140, 0.3)) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25) !important;
+    border-radius: 12px !important;
+    padding: 8px !important;
     display: none;
-    flex-direction: column;
-    gap: 4px;
-    min-width: 220px;
-    z-index: 10000;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    flex-direction: column !important;
+    gap: 4px !important;
+    min-width: 220px !important;
+    z-index: 10000 !important;
+    font-family: ${SYSTEM_FONT_FAMILY} !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
   `;
-
-  // Animasi hover sederhana
-  mainBtn.onmouseenter = () => {
-    mainBtn.style.transform = 'scale(1.1)';
-  };
-  mainBtn.onmouseleave = () => {
-    mainBtn.style.transform = 'scale(1)';
-  };
 
   const closePopup = () => {
     popupMenu.style.display = 'none';
@@ -150,13 +182,13 @@ function renderFeedPopupOptions(
   btnActive.type = 'button';
   btnActive.style.cssText = getOptionStyle();
   btnActive.innerHTML = `
-    <div style="display: flex; align-items: center; gap: 10px; width: 100%; color: #ffffff;">
-      ${iconDownload(18, '#ffffff')}
-      <span style="font-size: 13px; font-weight: 500; line-height: 1;">Unduh slide yang tampil</span>
+    <div style="display: flex; align-items: center; gap: 10px; width: 100%; color: var(--dpg-text-primary, #F5EBDD); font-family: ${SYSTEM_FONT_FAMILY};">
+      ${iconDownload(18, 'currentColor')}
+      <span style="font-size: 13px; font-weight: 500; line-height: 1.2;">Unduh slide yang tampil</span>
     </div>
   `;
   btnActive.onmouseenter = () => {
-    btnActive.style.background = 'rgba(255, 255, 255, 0.12)';
+    btnActive.style.background = 'rgba(49, 91, 140, 0.2)';
   };
   btnActive.onmouseleave = () => {
     btnActive.style.background = 'transparent';
@@ -173,13 +205,13 @@ function renderFeedPopupOptions(
   btnAll.type = 'button';
   btnAll.style.cssText = getOptionStyle();
   btnAll.innerHTML = `
-    <div style="display: flex; align-items: center; gap: 10px; width: 100%; color: #ffffff;">
-      ${iconDownload(18, '#ffffff')}
-      <span style="font-size: 13px; font-weight: 500; line-height: 1;">Unduh semua media</span>
+    <div style="display: flex; align-items: center; gap: 10px; width: 100%; color: var(--dpg-text-primary, #F5EBDD); font-family: ${SYSTEM_FONT_FAMILY};">
+      ${iconDownload(18, 'currentColor')}
+      <span style="font-size: 13px; font-weight: 500; line-height: 1.2;">Unduh semua media (via link)</span>
     </div>
   `;
   btnAll.onmouseenter = () => {
-    btnAll.style.background = 'rgba(255, 255, 255, 0.12)';
+    btnAll.style.background = 'rgba(49, 91, 140, 0.2)';
   };
   btnAll.onmouseleave = () => {
     btnAll.style.background = 'transparent';
@@ -417,20 +449,21 @@ async function handleDownloadAllViaLink(post: HTMLElement, btn: HTMLButtonElemen
 
 function getOptionStyle(): string {
   return `
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: transparent;
-    border: none;
-    color: #ffffff;
-    font-size: 13px;
-    font-weight: 500;
-    padding: 8px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    width: 100%;
-    text-align: left;
-    white-space: nowrap;
-    transition: background 0.15s ease;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    background: transparent !important;
+    border: none !important;
+    color: var(--dpg-text-primary, #F5EBDD) !important;
+    font-family: ${SYSTEM_FONT_FAMILY} !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    padding: 8px 10px !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    width: 100% !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+    transition: background 0.15s ease !important;
   `;
 }

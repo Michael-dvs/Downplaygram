@@ -260,8 +260,9 @@ describe('story-tray - 2-Second Long-Hover Anonymous Story Trigger', () => {
       const overlay = btn.querySelector('.downplaygram-hover-ghost-overlay');
       expect(overlay).not.toBeNull();
       expect(overlay?.innerHTML).toContain('dpg-active-progress-circle');
-      expect(overlay?.innerHTML).toContain('rgba(255, 255, 255, 0.2)');
-      expect(overlay?.innerHTML).toContain('#c084fc');
+      expect(overlay?.innerHTML).toContain('var(--dpg-ring-track');
+      expect(overlay?.innerHTML).toContain('#315B8C');
+      expect(overlay?.innerHTML).toContain('#F5EBDD');
       expect(overlay?.innerHTML).toContain('svg');
 
       // Fast forward 1 second (less than 2s threshold)

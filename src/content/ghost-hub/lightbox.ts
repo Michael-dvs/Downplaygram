@@ -22,6 +22,7 @@ import {
   iconAlertCircle,
   iconDownload,
 } from '../../ui/icons';
+import { SYSTEM_FONT_FAMILY } from '../../ui/theme';
 
 export interface StoryItem {
   id: string;
@@ -86,7 +87,7 @@ export class StoryLightbox {
         position: fixed;
         inset: 0;
         z-index: 2147483647;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        font-family: ${SYSTEM_FONT_FAMILY};
         user-select: none;
       }
       :host(.active) {
@@ -135,7 +136,7 @@ export class StoryLightbox {
         height: 32px;
         border-radius: 50%;
         object-fit: cover;
-        border: 1.5px solid #a855f7;
+        border: 1.5px solid #315B8C;
       }
       .username-meta {
         display: flex;
@@ -158,11 +159,11 @@ export class StoryLightbox {
       .ghost-tag {
         font-size: 10px;
         font-weight: 700;
-        color: #a855f7;
-        background: rgba(168, 85, 247, 0.15);
+        color: #F5EBDD;
+        background: rgba(49, 91, 140, 0.3);
         padding: 1px 6px;
         border-radius: 6px;
-        border: 1px solid rgba(168, 85, 247, 0.3);
+        border: 1px solid rgba(49, 91, 140, 0.5);
       }
       .close-btn {
         background: none;
@@ -323,8 +324,8 @@ export class StoryLightbox {
       .spinner {
         width: 36px;
         height: 36px;
-        border: 3px solid rgba(168, 85, 247, 0.2);
-        border-top-color: #a855f7;
+        border: 3px solid rgba(49, 91, 140, 0.2);
+        border-top-color: #315B8C;
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
       }
@@ -522,14 +523,13 @@ export class StoryLightbox {
     modal.innerHTML = `
       <div class="header">
         <div class="user-info">
-          <span style="color: #a855f7; display: flex; align-items: center;">${iconGhost(16, '#a855f7')}</span>
-          <span class="ghost-tag">GHOST ENGINE</span>
+          <span style="color: #315B8C; display: flex; align-items: center;">${iconGhost(16, '#315B8C')}</span>
           <span class="username-text">@${this.username}</span>
         </div>
         <button class="close-btn" id="modal-close-btn" title="Tutup">${iconClose(18, '#a1a1aa')}</button>
       </div>
       <div class="state-container">
-        <div style="margin-bottom: 4px;">${iconSpinner(28, '#a855f7')}</div>
+        <div style="margin-bottom: 4px;">${iconSpinner(28, '#315B8C')}</div>
         <div class="state-title">${message}</div>
         <div class="state-subtitle">Mengambil data story secara aman tanpa mengirimkan seen beacon ke server target.</div>
       </div>
@@ -578,8 +578,7 @@ export class StoryLightbox {
     modal.innerHTML = `
       <div class="header">
         <div class="user-info">
-          <span style="color: #a855f7; display: flex; align-items: center;">${iconGhost(16, '#a855f7')}</span>
-          <span class="ghost-tag">GHOST ENGINE</span>
+          <span style="color: #315B8C; display: flex; align-items: center;">${iconGhost(16, '#315B8C')}</span>
           <span class="username-text">@${this.username}</span>
         </div>
         <button class="close-btn" id="modal-close-btn" title="Tutup">${iconClose(18, '#a1a1aa')}</button>
@@ -636,7 +635,7 @@ export class StoryLightbox {
     modal.innerHTML = `
       <div class="header">
         <div class="user-info">
-          ${this.userAvatarUrl ? `<img class="user-avatar" src="${this.userAvatarUrl}" alt="${this.username}" />` : `<span style="color: #a855f7; display: flex; align-items: center;">${iconGhost(18, '#a855f7')}</span>`}
+          ${this.userAvatarUrl ? `<img class="user-avatar" src="${this.userAvatarUrl}" alt="${this.username}" />` : `<span style="color: #315B8C; display: flex; align-items: center;">${iconGhost(18, '#315B8C')}</span>`}
           <div class="username-meta">
             <div class="username-row">
               <span class="username-text">@${this.username}</span>

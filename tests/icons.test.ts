@@ -158,10 +158,10 @@ describe('ui/icons - Design System & Micro-Interactions', () => {
     const ring = renderStoryProgressRing();
     expect(ring).toContain('viewBox="0 0 100 100"');
     expect(ring).toContain('dpg-active-progress-circle');
-    expect(ring).toContain('stroke="rgba(255, 255, 255, 0.2)"');
-    expect(ring).toContain('stroke="#c084fc"');
+    expect(ring).toContain('stroke="var(--dpg-ring-track, rgba(245, 235, 221, 0.25))"');
+    expect(ring).toContain('stroke="var(--dpg-ring-progress, #315B8C)"');
     expect(ring).toContain('stroke-dasharray="251.32"');
-    expect(ring).toContain('drop-shadow(0 0 3px rgba(192, 132, 252, 0.8))');
+    expect(ring).toContain('drop-shadow(0 0 4px rgba(49, 91, 140, 0.6))');
   });
 
   it('renders canonical 24x24 download icon with dynamic color and size', () => {
@@ -191,11 +191,11 @@ describe('ui/icons - Design System & Micro-Interactions', () => {
     expect(defaultSvg).toContain('width="22"');
     expect(defaultSvg).toContain('height="22"');
     expect(defaultSvg).toContain('viewBox="0 0 32 32"');
-    expect(defaultSvg).toContain('fill="#ffffff"');
+    expect(defaultSvg).toContain('fill="#F5EBDD"');
     expect(defaultSvg).toContain('M24.372 22.603c2.513');
 
-    const customSvg = iconEyeLowVision(24, '#a855f7');
+    const customSvg = iconEyeLowVision(24, '#315B8C');
     expect(customSvg).toContain('width="24"');
-    expect(customSvg).toContain('fill="#a855f7"');
+    expect(customSvg).toContain('fill="#315B8C"');
   });
 });

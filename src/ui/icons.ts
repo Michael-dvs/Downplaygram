@@ -1,7 +1,4 @@
-/**
- * Downplaygram Design System: Animated SVG Icons & Global CSS Keyframes
- * Minimalist Lucide/Feather style SVG vectors with smooth micro-interactions.
- */
+import { injectGlobalThemeStyles } from './theme';
 
 export const GLOBAL_ANIMATION_CSS = `
   @keyframes dpg-spin {
@@ -55,9 +52,10 @@ export const GLOBAL_ANIMATION_CSS = `
   .dpg-active-progress-circle {
     animation: dpg-circle-fill-2s 2s linear forwards !important;
     transform-origin: center !important;
+    stroke: var(--dpg-ring-progress, #315B8C) !important;
   }
   .dpg-progress-ring-circle {
-    stroke: #c084fc !important;
+    stroke: var(--dpg-ring-progress, #315B8C) !important;
     stroke-width: 5 !important;
     fill: none !important;
     stroke-linecap: round !important;
@@ -87,44 +85,46 @@ export function injectGlobalAnimations(): void {
 if (typeof document !== 'undefined') {
   try {
     injectGlobalAnimations();
+    injectGlobalThemeStyles();
   } catch (_) {
     // Ignore in non-browser/restricted contexts
   }
 }
 
 /**
- * Ring Progress SVG 2 Detik Beresolusi Presisi dengan Fallback Inline Attributes
+ * Ring Progress SVG 2 Detik Beresolusi Presisi dengan Palet #315B8C dan #F5EBDD
  * Radius 40 (Keliling = 2 * PI * 40 = 251.32) pas di dalam canvas 100x100 tanpa terpotong
  */
 export function renderStoryProgressRing(): string {
   injectGlobalAnimations();
+  injectGlobalThemeStyles();
   return `
     <svg 
       viewBox="0 0 100 100" 
       style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: rotate(-90deg); pointer-events: none; overflow: visible; display: block;"
     >
-      <!-- Track Latar Belakang (Transparan Samar) -->
+      <!-- Track Latar Belakang (Cream / Muted Tone) -->
       <circle 
         cx="50" 
         cy="50" 
         r="40" 
         fill="none" 
-        stroke="rgba(255, 255, 255, 0.2)" 
+        stroke="var(--dpg-ring-track, rgba(245, 235, 221, 0.25))" 
         stroke-width="4.5"
       />
-      <!-- Garis Progres Ungu Neon Berjalan (2 Detik) -->
+      <!-- Garis Progres Berputar (Ocean Blue #315B8C / Adaptive) -->
       <circle 
         cx="50" 
         cy="50" 
         r="40" 
         fill="none" 
-        stroke="#c084fc" 
+        stroke="var(--dpg-ring-progress, #315B8C)" 
         stroke-width="5" 
-        stroke-linecap="round"
+        stroke-linecap="round" 
         stroke-dasharray="251.32" 
         stroke-dashoffset="251.32" 
         class="dpg-active-progress-circle"
-        style="filter: drop-shadow(0 0 3px rgba(192, 132, 252, 0.8));"
+        style="filter: drop-shadow(0 0 4px rgba(49, 91, 140, 0.6));"
       />
     </svg>
   `;
@@ -213,7 +213,7 @@ export const iconMultiDownload = iconDownload;
 /**
  * Icon Eye-Low-Vision (Anonymous Indicator)
  */
-export function iconEyeLowVision(size = 22, color = '#ffffff'): string {
+export function iconEyeLowVision(size = 22, color = '#F5EBDD'): string {
   injectGlobalAnimations();
   return `
     <svg width="${size}" height="${size}" viewBox="0 0 32 32" fill="${color}" xmlns="http://www.w3.org/2000/svg" style="display: block; flex-shrink: 0;">

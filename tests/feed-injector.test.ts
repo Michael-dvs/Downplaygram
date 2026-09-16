@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { handleDownloadSinglePost, handleDownloadActiveSlide } from '../src/content/injectors/feed';
+import { handleDownloadSinglePost, handleDownloadActiveSlide, createFeedDownloadButton } from '../src/content/injectors/feed';
 import * as sniffer from '../src/lib/media-sniffer';
 import * as runtime from '../src/lib/runtime';
 
@@ -146,6 +146,54 @@ describe('feed-injector', () => {
 
       expect(sendMessageMock).not.toHaveBeenCalled();
       expect(mockBtn.innerHTML).toContain('dpg-error-shake');
+    });
+  });
+
+  describe('createFeedDownloadButton (Dynamic Contrast & Adaptive Theme)', () => {
+    const origDocument = (globalThis as any).document;
+
+    beforeEach(() => {
+      (globalThis as any).document = {
+        getElementById: () => null,
+        head: {
+          appendChild: (c: any) => c,
+        },
+        createElement: (tag: string) => {
+          const el: any = {
+            tagName: tag.toUpperCase(),
+            type: '',
+            title: '',
+            style: {},
+            attributes: {} as Record<string, string>,
+            setAttribute: (name: string, val: string) => {
+              el.attributes[name] = val;
+              if (name === 'title') el.title = val;
+            },
+            getAttribute: (name: string) => el.attributes[name] || null,
+            innerHTML: '',
+            classList: {
+              add: vi.fn(),
+            },
+            addEventListener: vi.fn(),
+          };
+          return el;
+        },
+      };
+    });
+
+    afterEach(() => {
+      (globalThis as any).document = origDocument;
+    });
+
+    it('creates a download button with color: inherit and currentColor for dark/light adaptability', () => {
+      const btn = createFeedDownloadButton();
+      expect(btn).toBeDefined();
+      expect(btn.tagName).toBe('BUTTON');
+      expect(btn.getAttribute('aria-label')).toBe('Unduh Media');
+      expect(btn.getAttribute('title')).toBe('Unduh Media (Downplaygram)');
+      expect(btn.style.color).toBe('inherit');
+      expect(btn.innerHTML).toContain('currentColor');
+      expect(btn.innerHTML).toContain('viewBox="0 0 24 24"');
     });
   });
 });

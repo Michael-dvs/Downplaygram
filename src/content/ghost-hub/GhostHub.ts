@@ -7,6 +7,7 @@ import { openGhostLightbox } from './lightbox';
 import { sanitizeUsername } from '../../lib/sanitizer';
 import { safeSendMessage } from '../../lib/runtime';
 import { iconClose } from '../../ui/icons';
+import { SYSTEM_FONT_FAMILY } from '../../ui/theme';
 
 export class GhostHubElement extends HTMLElement {
   private shadow!: ShadowRoot;
@@ -71,8 +72,8 @@ export class GhostHubElement extends HTMLElement {
 
     const indicator = this.shadow.querySelector('.ghost-status-indicator') as HTMLElement | null;
     if (indicator) {
-      indicator.style.background = this.isGhostActive ? '#a855f7' : '#71717a';
-      indicator.style.boxShadow = this.isGhostActive ? '0 0 8px #a855f7' : 'none';
+      indicator.style.background = this.isGhostActive ? '#315B8C' : '#71717a';
+      indicator.style.boxShadow = this.isGhostActive ? '0 0 8px #315B8C' : 'none';
     }
   }
 
@@ -112,7 +113,7 @@ export class GhostHubElement extends HTMLElement {
         :host {
           display: block;
           position: relative;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          font-family: ${SYSTEM_FONT_FAMILY};
           user-select: none;
         }
 
@@ -152,8 +153,8 @@ export class GhostHubElement extends HTMLElement {
           width: 8px;
           height: 8px;
           border-radius: 50%;
-          background: ${this.isGhostActive ? '#a855f7' : '#71717a'};
-          box-shadow: ${this.isGhostActive ? '0 0 8px #a855f7' : 'none'};
+          background: ${this.isGhostActive ? '#315B8C' : '#71717a'};
+          box-shadow: ${this.isGhostActive ? '0 0 8px #315B8C' : 'none'};
           transition: all 0.2s ease;
         }
 
@@ -268,7 +269,7 @@ export class GhostHubElement extends HTMLElement {
         }
 
         input:checked + .slider {
-          background-color: #9333ea;
+          background-color: #315B8C;
         }
 
         input:checked + .slider:before {
@@ -306,7 +307,7 @@ export class GhostHubElement extends HTMLElement {
         }
 
         .username-input:focus {
-          border-color: #9333ea;
+          border-color: #315B8C;
         }
 
         .search-btn {
@@ -328,7 +329,7 @@ export class GhostHubElement extends HTMLElement {
         .status-msg {
           display: none;
           font-size: 12px;
-          color: #a855f7;
+          color: #315B8C;
           text-align: center;
         }
       </style>

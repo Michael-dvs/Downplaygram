@@ -6,6 +6,7 @@
  */
 
 import { iconEyeLowVision, renderStoryProgressRing, injectGlobalAnimations } from '../../ui/icons';
+import { injectGlobalThemeStyles } from '../../ui/theme';
 import { openAnonymousLightbox } from './lightbox';
 
 const PROCESSED_ATTR = 'data-downplaygram-hover-attached';
@@ -88,6 +89,7 @@ export function setupStoryTrayHoverListeners(): void {
   }
 
   injectGlobalAnimations();
+  injectGlobalThemeStyles();
 
   // Cari elemen baki story (biasanya berupa role="button" atau role="menuitem" di dalam header feed)
   const candidateButtons = Array.from(
@@ -180,7 +182,7 @@ export function setupStoryTrayHoverListeners(): void {
         width: ${size}px !important;
         height: ${size}px !important;
         border-radius: 50% !important;
-        background: rgba(0, 0, 0, 0.7) !important;
+        background: rgba(27, 38, 51, 0.72) !important; /* Deep Blue Glass Tint */
         backdrop-filter: blur(2.5px) !important;
         -webkit-backdrop-filter: blur(2.5px) !important;
         display: flex !important;
@@ -195,7 +197,7 @@ export function setupStoryTrayHoverListeners(): void {
       overlayEl.innerHTML = `
         ${renderStoryProgressRing()}
         <div style="z-index: 2; pointer-events: none; display: flex; align-items: center; justify-content: center; transform: scale(0.9);">
-          ${iconEyeLowVision(22, '#ffffff')}
+          ${iconEyeLowVision(22, '#F5EBDD')}
         </div>
       `;
 
